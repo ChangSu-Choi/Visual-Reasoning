@@ -1,0 +1,84 @@
+# example.yaml
+input_dim: 512
+mlp_hidden: 1024
+batch_size: 256
+clr_temperature: 0.5
+model_name: 'resnet50' # vit
+learning_rate: 0.0003
+
+# trainer
+num_workers: 8
+devices: -1
+epochs: 50
+accumulate_grad_batches: 4
+log_every_n_steps: 32
+model_save_path: '/home/hslim/jr_jujbob/new_VR/lighting/checkpoint'
+mode: train
+freeze: Flase
+
+### link of data
+## SimCLR & SupCLR
+# task1
+task1_category1_train: ''
+task1_category1_valid: ''
+task1_category1_test: ''
+task1_category2_train: '/home/hslim/jr_jujbob/VR/task1_dataset/category2/category2_train_all.csv'
+task1_category2_valid: '/home/hslim/jr_jujbob/VR/task1_dataset/category2/category2_valid_all.csv'
+task1_category2_test: '/home/hslim/jr_jujbob/VR/task1_dataset/category2/category2_test_all.csv'
+task1_category3_train: ''
+task1_category3_valid: ''
+task1_category3_test: ''
+task1_category4_train: ''
+task1_category4_valid: ''
+task1_category4_test: ''
+
+# task2
+task2_train: ''
+task2_valid: ''
+task2_test: ''
+
+# task3
+task3_train: ''
+task3_valid: ''
+task3_test: ''
+
+# task4
+task4_category1_train: ''
+task4_category1_valid: ''
+task4_category1_test: ''
+task4_category2_train: ''
+task4_category2_valid: ''
+task4_category2_test: ''
+
+## classification
+# task1
+classfication_task1_category1_train: '/home/cschoi/VR/dataset/Classification/task1/category1/train'
+classfication_task1_category1_valid: '/home/cschoi/VR/dataset/Classification/task1/category1/valid'
+classfication_task1_category1_test: '/home/cschoi/VR/dataset/Classification/task1/category1/test'
+classfication_task1_category2_train: '/home/cschoi/VR/dataset/Classification/task1/category2/train'
+classfication_task1_category2_valid: '/home/cschoi/VR/dataset/Classification/task1/category2/valid'
+classfication_task1_category2_test: '/home/cschoi/VR/dataset/Classification/task1/category2/test'
+classfication_task1_category3_train: '/home/cschoi/VR/dataset/Classification/task1/category3/train'
+classfication_task1_category3_valid: '/home/cschoi/VR/dataset/Classification/task1/category3/valid'
+classfication_task1_category3_test: '/home/cschoi/VR/dataset/Classification/task1/category3/test'
+classfication_task1_category4_train: '/home/cschoi/VR/dataset/Classification/task1/category4/train'
+classfication_task1_category4_valid: '/home/cschoi/VR/dataset/Classification/task1/category4/valid'
+classfication_task1_category4_test: '/home/cschoi/VR/dataset/Classification/task1/category4/test'
+
+# task2
+classfication_task2_train: '/home/cschoi/VR/dataset/Classification/task2/train'
+classfication_task2_valid: '/home/cschoi/VR/dataset/Classification/task2/valid'
+classfication_task2_test: '/home/cschoi/VR/dataset/Classification/task2/test'
+
+# task3
+classfication_task3_train: '/home/cschoi/VR/dataset/Classification/task3/train'
+classfication_task3_valid: '/home/cschoi/VR/dataset/Classification/task3/valid'
+classfication_task3_test: '/home/cschoi/VR/dataset/Classification/task3/test'
+
+# task4
+classfication_task4_category1_train: '/home/cschoi/VR/dataset/Classification/task4/category1/train'
+classfication_task4_category1_valid: '/home/cschoi/VR/dataset/Classification/task4/category1/valid'
+classfication_task4_category1_test: '/home/cschoi/VR/dataset/Classification/task4/category1/test'
+classfication_task4_category2_train: '/home/cschoi/VR/dataset/Classification/task4/category2/train'
+classfication_task4_category2_valid: '/home/cschoi/VR/dataset/Classification/task4/category2/valid'
+classfication_task4_category2_test: '/home/cschoi/VR/dataset/Classification/task4/category2/test'

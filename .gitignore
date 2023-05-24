@@ -1,0 +1,16 @@
+# Ignore log files
+*.log
+
+# Ignore the build directory
+/lightning_logs/
+/checkpoint/
+/dataset/
+/__pycache__/
+/tb_logs/
+
+# Ignore .DS_Store files (specific to macOS)
+.DS_Store
+.test.ipynb
+
+# Ignore all .env files
+*.env
