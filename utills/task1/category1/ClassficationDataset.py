@@ -46,36 +46,32 @@ class ClassficationDataset(Dataset):
         return len(self.df)
         
     def __getitem__(self, idx):
+        sample = self.df.iloc[idx]
+        target = sample["correct_answer_group_ID"][0] - 1
+        question_path = sample["file_path"] + sample["Questions"][0]["images"][0]["image_url"] 
+        answer_paths = self.get_answer_paths(sample)
 
         try:
-            sample = self.df.iloc[idx]
-            ###
-            target = sample["correct_answer_group_ID"][0] - 1 #  ori [1] or [2] so transe it for [0] or [1]
-
-            q_img = sample["file_path"] + sample["Questions"][0]["images"][0]["image_url"] 
-            a1_img = [sample["file_path"] + ans_img["image_url"] for ans_img in sample["answer1"][0]["images"]]
-            a2_img = [sample["file_path"] + ans_img["image_url"] for ans_img in sample["answer2"][0]["images"]]
-            read_qesimg_feature = cv2.imread(q_img)
-            read_ansimg_feature1 = [cv2.imread(img) for img in a1_img]
-            read_ansimg_feature2 = [cv2.imread(img) for img in a2_img]
-            
-
-            cvt_qimg_feature = cv2.cvtColor(read_qesimg_feature, cv2.COLOR_BGR2RGB)
-            cvt_ansimg_feature1 = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in read_ansimg_feature1]
-            cvt_ansimg_feature2 = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in read_ansimg_feature2]
-
-            q_img_feature = self.transforms[self.mode](image=cvt_qimg_feature)["image"]
-            a1_img_feature = [self.transforms[self.mode](image=img)["image"] for img in cvt_ansimg_feature1]
-            a2_img_feature = [self.transforms[self.mode](image=img)["image"] for img in cvt_ansimg_feature2]
-
+            q_img_feature = self.process_image(question_path)
+            a1_img_features = [self.process_image(path) for path in answer_paths[0]]
+            a2_img_features = [self.process_image(path) for path in answer_paths[1]]
         except IOError:
-            print(self.df.iloc[idx],"에서 문제 발생")
-            pass
+            print(f"문제 발생 위치: {sample}")
         
         return {
             "target": target,
             "q_img": q_img_feature,
-            "a1_imgs": a1_img_feature,
-            "a2_imgs": a2_img_feature,
-            "file_path":sample["file_path"]
+            "a1_imgs": a1_img_features,
+            "a2_imgs": a2_img_features,
+            "file_path": sample["file_path"]
         }
+
+    def get_answer_paths(self, sample):
+        return [
+            [sample["file_path"] + ans_img["image_url"] for ans_img in sample["answer1"][0]["images"]],
+            [sample["file_path"] + ans_img["image_url"] for ans_img in sample["answer2"][0]["images"]]
+        ]
+
+    def process_image(self, img_path):
+        img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
+        return self.transforms[self.mode](image=img)["image"]

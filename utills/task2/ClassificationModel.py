@@ -63,6 +63,7 @@ class ClassificationModel(pl.LightningModule):
         logits = self.forward(batch)
 
         target_a1, target_a2, target_a3 = (batch["target"] == 1).float(), (batch["target"] == 2).float(), (batch["target"] == 3).float()
+
         loss_a1 = self.criterion(logits["q_a1_logit"], target_a1)
         loss_a2 = self.criterion(logits["q_a2_logit"], target_a2)
         loss_a3 = self.criterion(logits["q_a3_logit"], target_a3)

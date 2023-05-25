@@ -46,69 +46,32 @@ class ClassficationDataset(Dataset):
         return len(self.df)
         
     def __getitem__(self, idx):
+        sample = self.df.iloc[idx]
+        target = sample["correct_answer_group_ID"][0]
+        file_paths = [sample["file_path"] + img for img in self.get_image_paths(sample)]
 
         try:
-            sample = self.df.iloc[idx]
-            ###
-            # target = sample["correct_answer_group_ID"][0] - 1 #  ori [1] or [2] so transe it for [0] or [1]
-
-            # q_img = sample["file_path"] + sample["Questions"][0]["images"][0]["image_url"] 
-            # a1_img = [sample["file_path"] + ans_img["image_url"] for ans_img in sample["answer1"]["images"]]
-            # a2_img = [sample["file_path"] + ans_img["image_url"] for ans_img in sample["answer2"]["images"]]
-            # a3_img = [sample["file_path"] + ans_img["image_url"] for ans_img in sample["answer3"]["images"]]
-            
-            # read_qesimg_feature = cv2.imread(q_img)
-            # read_ansimg_feature1 = [cv2.imread(img) for img in a1_img]
-            # read_ansimg_feature2 = [cv2.imread(img) for img in a2_img]
-            # read_ansimg_feature3 = [cv2.imread(img) for img in a3_img]
-            
-
-            # cvt_qimg_feature = cv2.cvtColor(read_qesimg_feature, cv2.COLOR_BGR2RGB)
-            # cvt_ansimg_feature1 = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in read_ansimg_feature1]
-            # cvt_ansimg_feature2 = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in read_ansimg_feature2]
-            # cvt_ansimg_feature3 = [cv2.cvtColor(img, cv2.COLOR_BGR2RGB) for img in read_ansimg_feature3]
-
-
-            # q_img_feature = self.transforms[self.mode](image=cvt_qimg_feature)["image"]
-            # a1_img_feature = [self.transforms[self.mode](image=img)["image"] for img in cvt_ansimg_feature1]
-            # a2_img_feature = [self.transforms[self.mode](image=img)["image"] for img in cvt_ansimg_feature2]
-            # a3_img_feature = [self.transforms[self.mode](image=img)["image"] for img in cvt_ansimg_feature3]
-
-            ###
-
-            target = sample["correct_answer_group_ID"][0] - 1 #  ori [1] or [2] so transe it for [0] or [1]
-
-            q_img = sample["file_path"] + sample["Questions"][0]["images"][0]["image_url"] 
-            a1_img = sample["file_path"] + sample["answer_img1"]["images"][0]["image_url"]
-            a2_img = sample["file_path"] + sample["answer_img2"]["images"][0]["image_url"]
-            a3_img = sample["file_path"] + sample["answer_img3"]["images"][0]["image_url"]
-
-            read_qesimg_feature = cv2.imread(q_img)
-            read_ansimg_feature1 = cv2.imread(a1_img)
-            read_ansimg_feature2 = cv2.imread(a2_img)
-            read_ansimg_feature3 = cv2.imread(a3_img)
-
-            cvt_qimg_feature = cv2.cvtColor(read_qesimg_feature, cv2.COLOR_BGR2RGB)
-            cvt_ansimg_feature1 = cv2.cvtColor(read_ansimg_feature1, cv2.COLOR_BGR2RGB)
-            cvt_ansimg_feature2 = cv2.cvtColor(read_ansimg_feature2, cv2.COLOR_BGR2RGB)
-            cvt_ansimg_feature3 = cv2.cvtColor(read_ansimg_feature3, cv2.COLOR_BGR2RGB)
-
-            q_img_feature = self.transforms[self.mode](image=cvt_qimg_feature)["image"]
-            a1_img_feature = self.transforms[self.mode](image=cvt_ansimg_feature1)["image"]
-            a2_img_feature = self.transforms[self.mode](image=cvt_ansimg_feature2)["image"]
-            a3_img_feature = self.transforms[self.mode](image=cvt_ansimg_feature3)["image"]
-
-
-
+            images = [self.load_image(path) for path in file_paths]
         except IOError:
-            print(self.df.iloc[idx],"에서 문제 발생")
-            pass
+            print(f"문제 발생 위치: {sample}")
         
         return {
             "target": target,
-            "q_img": q_img_feature,
-            "a1_img": a1_img_feature,
-            "a2_img": a2_img_feature,
-            "a3_img": a3_img_feature,
-            "file_path":sample["file_path"]
+            "q_img": images[0],
+            "a1_img": images[1],
+            "a2_img": images[2],
+            "a3_img": images[3],
+            "file_path": sample["file_path"]
         }
+
+    def get_image_paths(self, sample):
+        return [
+            sample["Questions"][0]["images"][0]["image_url"],
+            sample["answer_img1"]["images"][0]["image_url"],
+            sample["answer_img2"]["images"][0]["image_url"],
+            sample["answer_img3"]["images"][0]["image_url"]
+        ]
+
+    def load_image(self, img_path):
+        img = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
+        return self.transforms[self.mode](image=img)["image"]

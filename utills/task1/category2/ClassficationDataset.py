@@ -48,39 +48,22 @@ class ClassficationDataset(Dataset):
     def __getitem__(self, idx):
 
         sample = self.df.iloc[idx]
-        if sample["is_correct"]:
-            target = 1
-        else:
-            target = 0
+        target = 1 if sample["is_correct"] else 0
         
-        q_img = [sample["file_path"] + ans_img["image_url"] for ans_img in sample["question"][0]["images"]] 
-        q1_img = cv2.imread(q_img[0])
-        q2_img = cv2.imread(q_img[1])
-        q3_img = cv2.imread(q_img[2])
-
-
-        q1_img_feature = cv2.cvtColor(q1_img, cv2.COLOR_BGR2RGB)
-        q2_img_feature = cv2.cvtColor(q2_img, cv2.COLOR_BGR2RGB)
-        q3_img_feature = cv2.cvtColor(q3_img, cv2.COLOR_BGR2RGB)
-
-        q1_img_feature = self.transforms[self.mode](image=q1_img_feature)["image"]
-        q2_img_feature = self.transforms[self.mode](image=q2_img_feature)["image"]
-        q3_img_feature = self.transforms[self.mode](image=q3_img_feature)["image"]
-
-        a_img = sample["file_path"] + sample["answer"][0]["images"][0]["image_url"]
-        a_img_feature = cv2.imread(a_img)
-        a_img_feature = cv2.cvtColor(a_img_feature, cv2.COLOR_BGR2RGB)
-        a_img_feature = self.transforms[self.mode](image = a_img_feature)["image"]
-
-        # except Exception as e:
-        #     print(e)
-        #     print(self.df.iloc[idx],"에서 문제 발생")
-        #     pass
+        q_imgs = [self.process_image(sample["file_path"] + img["image_url"]) 
+                  for img in sample["question"][0]["images"]]
         
+        a_img = self.process_image(sample["file_path"] + sample["answer"][0]["images"][0]["image_url"])
+
         return {
             "target": target,
-            "q1_imgs": q1_img_feature,
-            "q2_imgs": q2_img_feature,
-            "q3_imgs": q3_img_feature,
-            "a_img": a_img_feature
+            "q1_imgs": q_imgs[0],
+            "q2_imgs": q_imgs[1],
+            "q3_imgs": q_imgs[2],
+            "a_img": a_img
         }
+
+    def process_image(self, img_path):
+        img = cv2.imread(img_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        return self.transforms[self.mode](image=img)["image"]

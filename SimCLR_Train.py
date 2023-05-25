@@ -14,45 +14,51 @@ import os
 import subprocess
 
 
-def main(args):
-    # 정확도 < 속도
-    torch.set_float32_matmul_precision('medium')
-    # 정확도 < 속도
-    torch.set_float32_matmul_precision('medium')
-    #파이토치의 랜덤시드 고정
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
-    # 넘파이 랜덤시드 고정
-    np.random.seed(0)
-    # Config 및 기타 설정
+def create_model(args):
     if args.model_name == 'resnet50':
         model = torchvision.models.resnet50(weights='ResNet50_Weights.DEFAULT')
         model.fc = nn.Linear(model.fc.in_features, args.input_dim)
     elif args.model_name == 'vit':
         model = timm.create_model('vit_base_patch16_224', pretrained=True)
         model.head = nn.Linear(768, args.input_dim)
+    else:
+        raise ValueError(f"Unsupported model_name: {args.model_name}. Choose from ['resnet50', 'vit']")
 
+    return model
+
+
+def main(args):
+    torch.set_float32_matmul_precision('medium')
+    torch.manual_seed(0)
+    torch.cuda.manual_seed(0)
+    np.random.seed(0)
+
+    model = create_model(args)
     criterion = SimCLR_Loss(args.batch_size, args.clr_temperature)
     simclr = SimCLR(model, criterion, args)
 
-    # ModelCheckpoint 생성 및 설정
     checkpoint_callback = ModelCheckpoint(
-        monitor='val_loss',  # 추적할 지표 설정
-        mode='min',  # 지표를 최소화하도록 설정
-        save_top_k=2,  # 베스트 모델 k개를 저장, 1로 설정하면 베스트 모델 1개만 저장
-        save_last=True,  # 마지막 모델도 저장
-        filename='best-model-{epoch:02d}-{val_loss:.2f}',  # 저장될 파일명 형식
-        dirpath='checkpoint/SimCLR',  # 체크포인트 저장 경로
+        monitor='val_loss',
+        mode='min',
+        save_top_k=2,
+        save_last=True,
+        filename='best-model-{epoch:02d}-{val_loss:.2f}',
+        dirpath='checkpoint/SimCLR',
     )
-    
-    # 텐서 보드 
+
     logger = TensorBoardLogger("tb_logs/SimCLR", name=f"SimCLR-{args.model_name}-bs{args.batch_size}-epochs{args.epochs}")
-    # 체크포인트부터 학슬 할 건지 아닌지
-    if args.resume_from_checkpoint is None:
-        trainer = pl.Trainer(max_epochs=args.epochs, log_every_n_steps=args.log_every_n_steps, logger=logger, callbacks=[checkpoint_callback], devices=args.devices, strategy="ddp")
-    else:
-        trainer = pl.Trainer(max_epochs=args.epochs, log_every_n_steps=args.log_every_n_steps, logger=logger, callbacks=[checkpoint_callback], devices=args.devices, strategy="ddp", resume_from_checkpoint=checkpoint_path)
-    trainer.fit(supclr)
+
+    trainer_args = {
+        "max_epochs": args.epochs,
+        "log_every_n_steps": args.log_every_n_steps,
+        "logger": logger,
+        "callbacks": [checkpoint_callback],
+        "devices": args.devices,
+        "strategy": "ddp",
+        "resume_from_checkpoint": args.resume_from_checkpoint if args.resume_from_checkpoint is not None else None,
+    }
+    trainer = pl.Trainer(**trainer_args)
+    trainer.fit(simclr)
 
 if __name__ == "__main__":
     with open("utills/config.yaml", "r") as f:

@@ -2,72 +2,63 @@ import pytorch_lightning as pl
 from importlib import import_module
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.callbacks import ModelCheckpoint
-import torchvision
 import torch
-import torch.nn as nn
 import numpy as np
-import timm
 import argparse
 import yaml
 import os
 import subprocess
 import warnings
 
+
 def get_model(args):
-    # 모듈 경로를 생성합니다.
-    if args.category:
-        module_path = f"utills.task{args.task}.category{args.category}.ClassificationModel"
-    else:
-        module_path = f"utills.task{args.task}.ClassificationModel"
-    # 모듈을 동적으로 로드합니다.
+    module_path = f"utills.task{args.task}.{f'category{args.category}.' if args.category else ''}ClassificationModel"
     module = import_module(module_path)
-    # 모듈에서 ClassificationModel 클래스를 가져옵니다.
-    ClassificationModel = getattr(module, 'ClassificationModel')
-    # ClassificationModel를 인스턴스화하고 반환합니다.
-    return ClassificationModel(args)
+    return getattr(module, 'ClassificationModel')(args)
+
+
+def freeze_params(model, freeze):
+    for param in model.parameters():
+        param.requires_grad = not freeze
+    if freeze:
+        for name, param in model.named_parameters():
+            if "fc" in name:
+                param.requires_grad = True
 
 
 def main(args):
-    # 정확도 < 속도
     torch.set_float32_matmul_precision('medium')
     torch.manual_seed(0)
     torch.cuda.manual_seed(0)
     np.random.seed(0)
 
     model = get_model(args)
+    freeze_params(model, args.freeze)
 
-    if args.freeze is True:
-        # 모델 전체 프리즈 시키고
-        for param in model.parameters():
-            param.requires_grad = False
-        # model.named_parameters() 로 name을 확인하고 아래와 같이 required_grad = True 로 변경
-        for name, param in model.named_parameters():
-            if name.count("fc"):
-                param.requires_grad = True
-    else:
-        pass
-
-
-    # ModelCheckpoint 생성 및 설정
     checkpoint_callback = ModelCheckpoint(
-        monitor='val_loss',  # 추적할 지표 설정
-        mode='min',  # 지표를 최소화하도록 설정
-        save_top_k=2,  # 베스트 모델 k개를 저장, 1로 설정하면 베스트 모델 1개만 저장
-        save_last=True,  # 마지막 모델도 저장
-        filename='best-model-{epoch:02d}-{val_loss:.2f}',  # 저장될 파일명 형식
-        dirpath=f'checkpoint/Classification/task{args.task}/category{args.category}'\
-            if args.category else f'checkpoint/Classification/task{args.task}',  # 체크포인트 저장 경로
+        monitor='val_loss',
+        mode='min',
+        save_top_k=2,
+        save_last=True,
+        filename='best-model-{epoch:02d}-{val_loss:.2f}',
+        dirpath=f'checkpoint/Classification/task{args.task}/{f"category{args.category}" if args.category else ""}'
     )
-    
-    # 텐서 보드 
-    logger = TensorBoardLogger(f"tb_logs/Classification/task{args.task}/category{args.category}", name=f"{args.task}-{args.category}-{args.model_name}-bs{args.batch_size}-epochs{args.epochs}-{'Freeze' if args.freeze else 'NonFreeze'}")
+    log_dir = f"tb_logs/Classification/task{args.task}/{f'category{args.category}' if args.category else ''}"
+    os.makedirs(log_dir, exist_ok=True)
+    logger = TensorBoardLogger(log_dir, name=f"{args.task}-{args.category}-{args.model_name}-bs{args.batch_size}-epochs{args.epochs}-{'Freeze' if args.freeze else 'NonFreeze'}")
 
-    # 체크포인트부터 학슬 할 건지 아닌지
-    if args.resume_from_checkpoint is None:
-        trainer = pl.Trainer(max_epochs=args.epochs, log_every_n_steps=args.log_every_n_steps, logger=logger, callbacks=[checkpoint_callback], devices=args.devices, strategy="ddp")
-    else:
-        trainer = pl.Trainer(max_epochs=args.epochs, log_every_n_steps=args.log_every_n_steps, logger=logger, callbacks=[checkpoint_callback], devices=args.devices, strategy="ddp", resume_from_checkpoint=checkpoint_path)
-    
+    trainer_args = {"max_epochs": args.epochs, 
+                    "log_every_n_steps": args.log_every_n_steps, 
+                    "logger": logger, 
+                    "callbacks": [checkpoint_callback], 
+                    "devices": args.devices, 
+                    "strategy": "ddp"}
+
+    if args.resume_from_checkpoint:
+        trainer_args["resume_from_checkpoint"] = args.resume_from_checkpoint
+
+    trainer = pl.Trainer(**trainer_args)
+
     for name, param in model.named_parameters():
         print(name, param.requires_grad)
 
@@ -102,24 +93,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # GPU 전부 사용 안할거면 남들 사용하게 cpu우선순위 낮춤
-    if args.devices == -1:
-        pass
-    else:
-        ## cpu stuck이 나버려서 우선순위를 내려 보려고 함
-        # 현재 프로세스의 PID 확인
+    if args.devices != -1:
         pid = os.getpid()
-        result = subprocess.run(['renice', '15', '-p', f'{pid}'],capture_output=True,text=True)
-        if result.returncode == 0:
-            print("스케쥴러 우선순위 내림:")
-            print(result.stdout)
-        else:
-            print("스케쥴러 우선순위 내림 실패:")
-            print(result.stderr)
+        result = subprocess.run(['renice', '15', '-p', f'{pid}'], capture_output=True, text=True)
+        print(f"스케쥴러 우선순위 {'내림' if result.returncode == 0 else '내림 실패'}:\n{result.stdout or result.stderr}")
         
-        with open("utills/config.yaml", "r") as f:
-            config = yaml.safe_load(f)
-    
     warnings.filterwarnings('ignore', 'Invalid SOS parameters for sequential JPEG')
-
-
     main(args)
