@@ -12,7 +12,8 @@ def get_data(config):
     for directory in train_dir_list:
         FOLDER_NAME = directory+"/"
         JSON_NAME = directory+".json"
-        FILE_PATH = train_dir+FOLDER_NAME
+        FILE_PATH = train_dir+"/"+FOLDER_NAME
+        
         a_data = json.load(open(FILE_PATH+JSON_NAME))
         a_data["file_path"] = FILE_PATH
         a_data["question"] = [a_data["Questions"][0]]
@@ -24,7 +25,7 @@ def get_data(config):
     for directory in valid_dir_list:
         FOLDER_NAME = directory+"/"
         JSON_NAME = directory+".json"
-        FILE_PATH = valid_dir+FOLDER_NAME
+        FILE_PATH = valid_dir+"/"+FOLDER_NAME
         a_data = json.load(open(FILE_PATH+JSON_NAME))
         a_data["file_path"] = FILE_PATH
         a_data["question"] = [a_data["Questions"][0]]

@@ -4,10 +4,14 @@
 # Ignore the build directory
 /lightning_logs/
 /checkpoint/
-/dataset/
+/dataset/Classification/
+/dataset/CLR/
 /__pycache__/
 /tb_logs/
-
+/dataset/extract.ipynb
+/dataset/image_check.ipynb
+/dataset/make_df.ipynb
+/dataset/true.ipynb
 # Ignore .DS_Store files (specific to macOS)
 .DS_Store
 .test.ipynb
