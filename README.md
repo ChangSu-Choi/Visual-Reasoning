@@ -1,5 +1,5 @@
 # Large Scale Visual Reasoning Dataset
-대규모 시각 추론 데이터셋은 [NIA]([https://www.aihub.or.kr/](https://www.nia.or.kr/site/nia_kor/main.do)와 [EUCLIDSOFT](https://www.euclidsoft.co.kr/)가 구축한 대규모 이미지 데이터셋이다.
+대규모 시각 추론 데이터셋은 [NIA](https://www.nia.or.kr/site/nia_kor/main.do)와 [EUCLIDSOFT](https://www.euclidsoft.co.kr/)가 구축한 대규모 이미지 데이터셋이다.
 
 ## Example  
 ![Question Images](./templates/question.png)
