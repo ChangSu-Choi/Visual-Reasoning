@@ -1,0 +1,27 @@
+# Ignore log files
+*.log
+
+# Ignore the build directory
+/lightning_logs/
+/checkpoint/
+/dataset/Classification/
+/dataset/CLR/
+/__pycache__/
+/tb_logs/
+/dataset/extract.ipynb
+/dataset/image_check.ipynb
+/dataset/make_df.ipynb
+/dataset/true.ipynb
+/utills-old/
+/VR/
+/utills/task1/category3/__pycache__/
+/utills/task1/category4/__pycache__/
+# Ignore .DS_Store files (specific to macOS)
+.DS_Store
+.test.ipynb
+.task3.tar
+.task13.tar
+.task.42.tar
+# Ignore all .env files
+*.pyc
+*.env
