@@ -1,0 +1,84 @@
+# example.yaml
+input_dim: 512
+mlp_hidden: 1024
+batch_size: 32
+clr_temperature: 0.5
+model_name: 'resnet50' # vit
+learning_rate: 0.0003
+
+# trainer
+num_workers: 32
+devices: 1
+epochs: 50
+accumulate_grad_batches: 4
+log_every_n_steps: 10
+model_save_path: '/checkpoint'
+mode: train
+freeze: Flase
+
+### link of data
+## SimCLR & SupCLR
+# task1
+task1_category1_train: 'dataset/CLR/task1/category1/train.csv'
+task1_category1_valid: 'dataset/CLR/task1/category1/valid.csv'
+task1_category1_test: 'dataset/CLR/task1/category1/test.csv'
+task1_category2_train: 'dataset/CLR/task1/category2/train.csv'
+task1_category2_valid: 'dataset/CLR/task1/category2/valid.csv'
+task1_category2_test: 'dataset/CLR/task1/category2/test.csv'
+task1_category3_train: 'dataset/CLR/task1/category3/train.csv'
+task1_category3_valid: 'dataset/CLR/task1/category3/valid.csv'
+task1_category3_test: 'dataset/CLR/task1/category3/test.csv'
+task1_category4_train: 'dataset/CLR/task1/category4/train.csv'
+task1_category4_valid: 'dataset/CLR/task1/category4/valid.csv'
+task1_category4_test: 'dataset/CLR/task1/category4/test.csv'
+
+# task2
+task2_train: 'dataset/CLR/task2/train.csv'
+task2_valid: 'dataset/CLR/task2/valid.csv'
+task2_test: 'dataset/CLR/task2/test.csv'
+
+# task3
+task3_train: 'dataset/CLR/task2/train.csv'
+task3_valid: 'dataset/CLR/task2/test.csv'
+task3_test: 'dataset/CLR/task2/test.csv'
+
+# task4
+task4_category1_train: ''
+task4_category1_valid: ''
+task4_category1_test: ''
+task4_category2_train: ''
+task4_category2_valid: ''
+task4_category2_test: ''
+
+## classification
+# task1
+classfication_task1_category1_train: '/dataset/Classification/task1/category1/train'
+classfication_task1_category1_valid: '/dataset/Classification/task1/category1/valid'
+classfication_task1_category1_test: '/dataset/Classification/task1/category1/test'
+classfication_task1_category2_train: '/dataset/Classification/task1/category2/train'
+classfication_task1_category2_valid: '/dataset/Classification/task1/category2/valid'
+classfication_task1_category2_test: '/dataset/Classification/task1/category2/test'
+classfication_task1_category3_train: '/dataset/Classification/task1/category3/train'
+classfication_task1_category3_valid: '/dataset/Classification/task1/category3/valid'
+classfication_task1_category3_test: '/dataset/Classification/task1/category3/test'
+classfication_task1_category4_train: '/dataset/Classification/task1/category4/train'
+classfication_task1_category4_valid: '/dataset/Classification/task1/category4/valid'
+classfication_task1_category4_test: '/dataset/Classification/task1/category4/test'
+
+# task2
+classfication_task2_train: '/dataset/Classification/task2/train'
+classfication_task2_valid: '/dataset/Classification/task2/valid'
+classfication_task2_test: '/dataset/Classification/task2/test'
+
+# task3
+classfication_task3_train: '/dataset/Classification/task3/train'
+classfication_task3_valid: '/dataset/Classification/task3/valid'
+classfication_task3_test: '/dataset/Classification/task3/test'
+
+# task4
+classfication_task4_category1_train: '/dataset/Classification/task4/category1/train'
+classfication_task4_category1_valid: '/dataset/Classification/task4/category1/valid'
+classfication_task4_category1_test: '/dataset/Classification/task4/category1/test'
+classfication_task4_category2_train: '/dataset/Classification/task4/category2/train'
+classfication_task4_category2_valid: '/dataset/Classification/task4/category2/valid'
+classfication_task4_category2_test: '/dataset/Classification/task4/category2/test'
