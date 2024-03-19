@@ -1,16 +1,24 @@
 # Large Scale Visual Reasoning Dataset
-대규모 시각 추론 데이터셋은 [NIA](https://www.nia.or.kr/site/nia_kor/main.do)와 [EUCLIDSOFT](https://www.euclidsoft.co.kr/)가 구축한 대규모 이미지 데이터셋이다.
+📃[[PAPER]](https://ieeexplore.ieee.org/abstract/document/10067104)  
+Author: **ChangSu Choi**, HyeonSeok Lim, Hayoung Jang, Juhan Park, Eunkyung Kim, KyungTae Lim  
+[[MLP LAB]](https://sites.google.com/view/aailab), [[NIA]](https://www.nia.or.kr/site/nia_kor/main.do)그리고 [[EUCLIDSOFT]](https://www.euclidsoft.co.kr/)가 구축한 대규모 시각 추론 이미지 데이터셋.  
+
 
 ## Example  
 ![Question Images](./templates/question.png)
 
 ## 모델 실행 예시 코드   
-### Dependency
-1. 다음 명령어를 통해 필요한 패키지를 설치:
+### Dependency  
+다음 명령어를 통해 필요한 패키지를 설치:
 ```
 pip install -r requirements.txt
 ```
-2. 데이터셋은 추후 [AI-Hub](https://www.aihub.or.kr/)에 공개 예정
+[[AI-Hub]](https://www.aihub.or.kr/)에서 접근 후 사용 가능  
+[[카테고리 기반 추론 데이터]](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=data&dataSetSn=71291), 
+[[시각 상식 기반 추론 데이터]](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=data&dataSetSn=71288), 
+[[인과 관계 기반 추론 데이터]](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=data&dataSetSn=71286), 
+[[유사성 기반 추론 데이터]](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=data&dataSetSn=71279), 
+
 
 ## Traning(Classification_Train.py, SimCLR_Train.py, SupCLR_Train.py)  
 사용 예시:
@@ -44,19 +52,19 @@ python Classification_Train.py \
     --category 2
 ```  
 
-## Evaluation
-추후 공개 예정
-  
  
 ## Citation
 Please cite the repo if you use the data or code in this repo.
 ```
-@misc{Visual-Reasoning,
-  author = {MLP Lab},
-  title = {Large Scale Visual Reasoning Dataset},
-  year = {2023},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/ChangSu-Choi/Visual-Reasoning}},
-}
+@INPROCEEDINGS{10067104,
+  author={Choi, ChangSu and Lim, HyeonSeok and Jang, Hayoung and Park, Juhan and Kim, Eunkyung and Lim, KyungTae},
+  booktitle={2023 International Conference on Artificial Intelligence in Information and Communication (ICAIIC)}, 
+  title={Semantic Similarity-based Visual Reasoning without Language Information}, 
+  year={2023},
+  volume={},
+  number={},
+  pages={107-111},
+  keywords={Training;Deep learning;Visualization;Semantics;Training data;Transformers;Cognition;Visual Reasoning;Inference;Image similarity;Deep Learning},
+  doi={10.1109/ICAIIC57133.2023.10067104}}
+
 ```
